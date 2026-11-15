@@ -298,9 +298,9 @@ i[class*="fa-"] { line-height: 1; -webkit-font-smoothing: antialiased; }
 
 .link-actions {
   position: absolute; right: 7px; bottom: 7px; z-index: 3;
-  display: flex; gap: 3px; opacity: 0; transition: opacity 160ms var(--md-motion-standard);
+  display: none; gap: 3px;
 }
-.link-item:hover .link-actions, .link-item:focus-within .link-actions { opacity: 1; }
+.manage .link-actions { display: flex; }
 .mini-btn {
   width: 24px; height: 24px; display: grid; place-items: center;
   color: var(--md-on-surface-variant); background: var(--md-surface-container);
@@ -309,7 +309,6 @@ i[class*="fa-"] { line-height: 1; -webkit-font-smoothing: antialiased; }
 }
 .mini-btn:hover { color: var(--md-primary); background: var(--md-primary-container); }
 .mini-btn.danger:hover { color: var(--md-danger); background: rgba(179, 38, 30, 0.12); }
-@media (hover: none) { .link-actions { opacity: 0.9; } }
 
 .material-ripple {
   position: absolute; z-index: 5; pointer-events: none;
@@ -388,6 +387,113 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
 @keyframes material-ripple { to { opacity: 0; transform: scale(1); } }
 @keyframes empty-float { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
 
+/* ---------- 淡彩背景色 ---------- */
+:root {
+  --c-rose: #fde4ea; --c-peach: #ffe8d6; --c-yellow: #fff4c2; --c-green: #dff6e6;
+  --c-teal: #d8f3f1; --c-blue: #dbeafe; --c-purple: #ece1fb; --c-gray: #eceff3;
+}
+.link-card[data-color="rose"] { background: var(--c-rose); }
+.link-card[data-color="peach"] { background: var(--c-peach); }
+.link-card[data-color="yellow"] { background: var(--c-yellow); }
+.link-card[data-color="green"] { background: var(--c-green); }
+.link-card[data-color="teal"] { background: var(--c-teal); }
+.link-card[data-color="blue"] { background: var(--c-blue); }
+.link-card[data-color="purple"] { background: var(--c-purple); }
+.link-card[data-color="gray"] { background: var(--c-gray); }
+
+/* ---------- 导入菜单 / 批量管理 ---------- */
+.icon-btn.on { color: var(--md-primary); background: var(--md-primary-container); }
+.menu-wrap { position: relative; display: inline-flex; }
+.menu {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 200; min-width: 250px;
+  padding: 8px; display: flex; flex-direction: column; gap: 2px;
+  background: var(--md-surface); border: 1px solid rgba(196, 199, 197, 0.55); border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(11, 40, 100, 0.16);
+  animation: dialog-enter 200ms var(--md-motion-emphasized) both;
+}
+.menu button {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+  border: none; border-radius: 12px; background: transparent; color: var(--md-on-surface);
+  cursor: pointer; text-align: left; font-size: 13px;
+}
+.menu button:hover { background: var(--md-primary-container); }
+.menu button i { width: 20px; text-align: center; color: var(--md-primary); font-size: 16px; }
+.menu button span { display: flex; flex-direction: column; gap: 2px; }
+.menu button b { font-weight: 600; }
+.menu button small { color: var(--md-on-surface-variant); font-size: 11px; }
+
+.sel-check, .group-check {
+  display: none; width: 18px; height: 18px; margin: 0; flex: 0 0 auto;
+  accent-color: var(--md-primary); cursor: pointer;
+}
+.sel-check { position: absolute; left: 11px; top: 12px; z-index: 4; }
+.manage .sel-check, .manage .group-check { display: block; }
+.manage .link-card { padding-left: 36px; cursor: pointer; }
+.link-item.selected .link-card { border-color: var(--md-primary); box-shadow: 0 0 0 2px var(--md-primary); }
+.manage .app-body { padding-bottom: 120px; }
+
+.manage-bar {
+  position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 150;
+  max-width: min(96vw, 620px); padding: 8px 10px;
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px;
+  background: var(--md-surface); border: 1px solid rgba(196, 199, 197, 0.6); border-radius: 26px;
+  box-shadow: 0 8px 28px rgba(11, 40, 100, 0.2);
+  transform: translateX(-50%);
+  animation: bar-enter 260ms var(--md-motion-emphasized) both;
+}
+@keyframes bar-enter { from { opacity: 0; transform: translate(-50%, 16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.sel-count { padding: 0 12px; color: var(--md-primary); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.mb-btn {
+  height: 38px; padding: 0 14px; display: inline-flex; align-items: center; gap: 7px;
+  border: none; border-radius: 999px; background: transparent; color: var(--md-on-surface-variant);
+  cursor: pointer; font-size: 13px; font-weight: 600;
+  transition: background 160ms, color 160ms;
+}
+.mb-btn:hover:not(:disabled) { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+.mb-btn.danger:hover:not(:disabled) { background: rgba(179, 38, 30, 0.12); color: var(--md-danger); }
+.mb-btn.done { background: var(--md-primary); color: #fff; }
+.mb-btn.done:hover:not(:disabled) { background: var(--md-primary-hover); color: #fff; }
+.mb-btn:disabled { opacity: 0.4; cursor: default; }
+.color-wrap { position: relative; display: inline-flex; }
+.color-pop {
+  position: absolute; bottom: calc(100% + 14px); left: 50%; transform: translateX(-50%); z-index: 5;
+  padding: 12px; display: grid; grid-template-columns: repeat(5, 34px); gap: 8px;
+  background: var(--md-surface); border: 1px solid rgba(196, 199, 197, 0.6); border-radius: 18px;
+  box-shadow: 0 8px 28px rgba(11, 40, 100, 0.2);
+}
+.swatch {
+  width: 34px; height: 34px; display: grid; place-items: center;
+  border: 2px solid rgba(116, 119, 127, 0.35); border-radius: 50%;
+  color: var(--md-on-surface-variant); font-size: 12px; cursor: pointer;
+  transition: transform 140ms, border-color 140ms;
+}
+.swatch:hover { transform: scale(1.12); border-color: var(--md-primary); }
+
+/* ---------- 新对话框元素 ---------- */
+[data-picker] { display: contents; }
+dialog.wide { width: min(640px, 94vw); }
+.sub-row.one { grid-template-columns: 1fr; }
+.field textarea {
+  width: 100%; min-height: 120px; padding: 10px 14px; resize: vertical;
+  color: var(--md-on-surface); background: var(--md-surface-container-low);
+  border: 1px solid rgba(116, 119, 127, 0.4); border-radius: 12px;
+  font: inherit; font-size: 13px; line-height: 1.5;
+}
+.field textarea:focus { border-color: var(--md-primary); outline: none; box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.18); }
+.check { display: flex; align-items: center; gap: 8px; color: var(--md-on-surface-variant); font-size: 13px; cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--md-primary); }
+.file-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--md-on-surface-variant); font-size: 12px; }
+.format-note {
+  padding: 12px 14px; border-radius: 14px; background: var(--md-surface-container-low);
+  color: var(--md-on-surface-variant); font-size: 12px; line-height: 1.6;
+}
+.format-note pre {
+  margin: 8px 0; padding: 10px 12px; overflow: auto; border-radius: 10px;
+  background: var(--md-surface); color: var(--md-on-surface);
+  font: 11.5px/1.55 SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+}
+.format-note ul { margin: 6px 0 0; padding-left: 18px; }
+
 /* ---------- Mobile ---------- */
 @media (max-width: 860px) {
   :root { --app-bar-height: 128px; }
@@ -404,9 +510,10 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
   .total-chip { display: none; }
   .app-body {
     padding: 10px max(10px, env(safe-area-inset-right)) calc(32px + env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
-    flex-direction: column; gap: 10px;
+    flex-direction: column; align-items: stretch; gap: 10px;
   }
   .sidebar { display: none; }
+  .main-content, .container, .sections-grid, .section-card { width: 100%; }
   .app-bar-categories {
     display: block; max-height: 60px; margin-top: 8px; overflow: hidden;
     transition: max-height 280ms var(--md-motion-emphasized), opacity 220ms, margin-top 280ms var(--md-motion-emphasized);
@@ -479,6 +586,15 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
   dialog { background: #1b2028; border-color: rgba(67, 71, 78, 0.9); }
   .field input, .field select { background: #14181f; border-color: rgba(139, 144, 153, 0.45); }
   .hint.ok { color: #7fd69b; }
+  :root {
+    --c-rose: #4a2733; --c-peach: #4a3426; --c-yellow: #45401f; --c-green: #223e2c;
+    --c-teal: #1f3d3b; --c-blue: #203552; --c-purple: #372a4e; --c-gray: #2d3139;
+  }
+  .menu, .manage-bar { background: #1b2028; border-color: rgba(67, 71, 78, 0.9); }
+  .mb-btn.done { color: #041e49; }
+  .mb-btn.done:hover:not(:disabled) { color: #041e49; }
+  .format-note pre { background: #14181f; }
+  .field textarea { background: #14181f; border-color: rgba(139, 144, 153, 0.45); }
   @media (max-width: 860px) {
     .app-bar { background: rgba(20, 24, 31, 0.93); }
     .sidebar-link { background: rgba(31, 36, 48, 0.92); border-color: rgba(67, 71, 78, 0.9); }
@@ -506,7 +622,15 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
 
       <div class="app-bar-right">
         <span class="total-chip" id="totalChip">0 个链接</span>
-        <button id="importBtn" class="icon-btn" type="button" title="导入书签" aria-label="导入书签"><i class="fa-solid fa-file-import"></i></button>
+        <button id="manageBtn" class="icon-btn" type="button" title="批量管理" aria-label="批量管理" aria-pressed="false"><i class="fa-solid fa-list-check"></i></button>
+        <span class="menu-wrap">
+          <button id="importBtn" class="icon-btn" type="button" title="导入" aria-label="导入" aria-haspopup="menu"><i class="fa-solid fa-file-import"></i></button>
+          <div class="menu" id="importMenu" role="menu" hidden>
+            <button type="button" role="menuitem" data-imp="html"><i class="fa-solid fa-bookmark"></i><span><b>导入书签 HTML</b><small>浏览器导出的书签文件</small></span></button>
+            <button type="button" role="menuitem" data-imp="md"><i class="fa-brands fa-markdown"></i><span><b>导入 Markdown</b><small>粘贴内容或选择 .md 文件</small></span></button>
+            <button type="button" role="menuitem" data-imp="bulk"><i class="fa-solid fa-list"></i><span><b>批量导入网址</b><small>一次粘贴多行链接</small></span></button>
+          </div>
+        </span>
         <button id="exportBtn" class="icon-btn" type="button" title="导出书签" aria-label="导出书签"><i class="fa-solid fa-file-export"></i></button>
         <button id="addBtn" class="action-btn add" type="button"><i class="fa-solid fa-plus"></i><span>添加网址</span></button>
       </div>
@@ -576,6 +700,88 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
   </form>
 </dialog>
 
+<dialog id="mdDialog" class="wide">
+  <form class="dialog-form" id="mdForm" autocomplete="off">
+    <h2>导入 Markdown</h2>
+    <div class="field">
+      <label for="mdText">粘贴 Markdown 内容</label>
+      <textarea id="mdText" rows="9" placeholder="在这里粘贴 Markdown，或点下方选择文件"></textarea>
+    </div>
+    <div class="file-line">
+      <button type="button" class="action-btn tonal" id="mdPick"><i class="fa-solid fa-file-arrow-up"></i>选择 .md 文件</button>
+      <span id="mdFiles">可一次选多个文件，每个文件对应一个模块</span>
+    </div>
+    <div class="field">
+      <label for="mdDefault">默认模块名</label>
+      <input id="mdDefault" type="text" placeholder="没有写 title 时使用，默认「未分类」" />
+    </div>
+    <div class="format-note">
+      <b>格式说明</b>
+<pre>---
+title: 常用工具
+icon: fa-solid fa-toolbox
+---
+
+## 搜索
+- [Google](https://www.google.com) - 搜索引擎
+- [Bing](https://www.bing.com)
+
+## AI
+- [Claude](https://claude.ai) - AI 助手</pre>
+      <ul>
+        <li>开头 <code>---</code> 之间的 <code>title</code> 是模块名，<code>icon</code> 是 Font Awesome 图标类，两项都可省略</li>
+        <li><code>## 标题</code> 是文件夹；第一个 <code>##</code> 之前的链接归入「其他」</li>
+        <li>链接写成 <code>- [名称](网址) - 描述</code>，描述可省略</li>
+        <li>同名模块会合并，重复链接和非 http(s) 链接会跳过，<code>order</code> 字段会忽略</li>
+      </ul>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="action-btn text" data-close>取消</button>
+      <button type="submit" class="action-btn">导入</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="bulkDialog">
+  <form class="dialog-form" id="bulkForm" autocomplete="off">
+    <h2>批量导入网址</h2>
+    <div class="field">
+      <label for="bText">链接（每行一个）</label>
+      <textarea id="bText" rows="8" placeholder="https://github.com&#10;GitHub https://github.com&#10;[MDN](https://developer.mozilla.org)"></textarea>
+      <div class="hint" id="bHint">可以只写链接，也可以「标题 链接」或 Markdown 写法</div>
+    </div>
+    <label class="check"><input type="checkbox" id="bDetect" /> 在线识别标题（较慢，识别不出时用域名）</label>
+    <div data-picker="b"></div>
+    <div class="dialog-actions">
+      <button type="button" class="action-btn text" data-close>取消</button>
+      <button type="submit" class="action-btn" id="bSave">导入</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="moveDialog">
+  <form class="dialog-form" id="moveForm" autocomplete="off">
+    <h2 id="moveTitle">移动到</h2>
+    <div data-picker="m"></div>
+    <div class="dialog-actions">
+      <button type="button" class="action-btn text" data-close>取消</button>
+      <button type="submit" class="action-btn">移动</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="manage-bar" id="manageBar" role="toolbar" aria-label="批量管理" hidden>
+  <span class="sel-count" id="selCount">已选 0</span>
+  <button type="button" class="mb-btn" id="mbAll"><i class="fa-regular fa-square-check"></i><span>全选</span></button>
+  <button type="button" class="mb-btn" id="mbMove"><i class="fa-solid fa-folder-tree"></i><span>移动</span></button>
+  <span class="color-wrap">
+    <button type="button" class="mb-btn" id="mbColor"><i class="fa-solid fa-palette"></i><span>颜色</span></button>
+    <div class="color-pop" id="colorPop" hidden></div>
+  </span>
+  <button type="button" class="mb-btn danger" id="mbDel"><i class="fa-solid fa-trash"></i><span>删除</span></button>
+  <button type="button" class="mb-btn done" id="mbDone"><i class="fa-solid fa-check"></i><span>完成</span></button>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -585,8 +791,14 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
   const $ = (s) => document.querySelector(s);
   const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const safeIcon = (i) => (/^[\w\- ]+$/.test(i || '') && (i || '').trim() ? i.trim() : 'fa-solid fa-folder');
   const DEFAULT_ICON = 'fa-solid fa-folder';
+  const safeIcon = (i) => (/^[\w\- ]+$/.test(i || '') && (i || '').trim() ? i.trim() : DEFAULT_ICON);
+
+  const PALETTE = [
+    { k: 'rose', n: '玫瑰' }, { k: 'peach', n: '蜜桃' }, { k: 'yellow', n: '柠檬' }, { k: 'green', n: '薄荷' },
+    { k: 'teal', n: '青碧' }, { k: 'blue', n: '天蓝' }, { k: 'purple', n: '薰衣草' }, { k: 'gray', n: '云灰' },
+  ];
+  const palKeys = new Set(PALETTE.map((p) => p.k));
 
   /* ---------------- 数据 ---------------- */
   const item = (name, url, desc = '') => ({ id: uid(), name, url, desc });
@@ -640,6 +852,7 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
     }
     return null;
   }
+  const allIds = () => data.sections.flatMap((s) => s.groups.flatMap((g) => g.items.map((i) => i.id)));
   function cleanup() {
     data.sections.forEach((s) => { s.groups = s.groups.filter((g) => g.items.length); });
     data.sections = data.sections.filter((s) => s.groups.length);
@@ -655,10 +868,17 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
     return g;
   }
 
+  /* ---------------- 批量管理状态 ---------------- */
+  let manage = false;
+  const selected = new Set();
+
   /* ---------------- 渲染 ---------------- */
   function render() {
     cleanup();
-    const total = data.sections.reduce((n, s) => n + count(s), 0);
+    const ids = new Set(allIds());
+    [...selected].forEach((id) => { if (!ids.has(id)) selected.delete(id); });
+
+    const total = ids.size;
     $('#totalChip').textContent = total + ' 个链接';
     $('#sidebarToggle').hidden = data.sections.length === 0;
 
@@ -677,13 +897,14 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
         <div class="empty-state">
           <div class="empty-icon-wrapper" aria-hidden="true"><i class="fa-solid fa-folder-open"></i></div>
           <h2>这里暂时空空的</h2>
-          <p>添加网址，或导入浏览器导出的书签文件。</p>
+          <p>添加网址，或导入书签、Markdown、批量链接。</p>
           <div class="empty-actions">
             <button class="action-btn" type="button" data-empty="add"><i class="fa-solid fa-plus"></i>添加网址</button>
-            <button class="action-btn tonal" type="button" data-empty="import"><i class="fa-solid fa-file-import"></i>导入书签</button>
+            <button class="action-btn tonal" type="button" data-empty="import"><i class="fa-solid fa-file-import"></i>导入</button>
           </div>
         </div>`;
       setupSpy();
+      updateManageUI();
       return;
     }
 
@@ -703,14 +924,16 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
           ${s.groups.map((g, gi) => `
             <section class="group" style="--group-index:${gi}">
               <header class="group-header">
+                <input type="checkbox" class="group-check" data-sec="${s.id}" data-g="${gi}" aria-label="选择整个文件夹" ${g.items.every((i) => selected.has(i.id)) ? 'checked' : ''} />
                 <i class="fa-regular fa-folder" aria-hidden="true"></i>
                 <h3 class="group-name">${esc(g.name)}</h3>
                 <span class="group-count">${g.items.length}</span>
               </header>
               <div class="links-grid">
                 ${g.items.map((l, li) => `
-                  <div class="link-item" style="--link-index:${li}">
-                    <a href="${esc(l.url)}" class="link-card" target="_blank" rel="noopener noreferrer">
+                  <div class="link-item${selected.has(l.id) ? ' selected' : ''}" style="--link-index:${li}">
+                    <input type="checkbox" class="sel-check" data-id="${l.id}" aria-label="选择" ${selected.has(l.id) ? 'checked' : ''} />
+                    <a href="${esc(l.url)}" class="link-card" ${palKeys.has(l.color) ? `data-color="${l.color}"` : ''} target="_blank" rel="noopener noreferrer">
                       <span class="link-state-layer" aria-hidden="true"></span>
                       <span class="link-content">
                         <span class="link-top-row">
@@ -731,6 +954,7 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
         </div>
       </section>`).join('') + '</div>';
     setupSpy();
+    updateManageUI();
   }
 
   /* ---------------- 滚动高亮 ---------------- */
@@ -799,32 +1023,127 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
     const t = $('#toast');
     t.textContent = msg; t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
   }
 
-  /* ---------------- 添加 / 编辑对话框 ---------------- */
-  const dlg = $('#addDialog');
-  let editingId = null, detectSeq = 0;
+  /* ---------------- 模块 / 文件夹选择器（添加、批量导入、移动共用） ---------------- */
+  function pickerHtml(p) {
+    return `
+      <div class="field">
+        <label for="${p}Section">模块</label>
+        <select id="${p}Section"></select>
+        <div class="sub-row" hidden>
+          <input id="${p}NewSection" type="text" placeholder="新模块名称" />
+          <input id="${p}NewIcon" type="text" placeholder="图标类，如 fa-solid fa-star" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="${p}Group">文件夹</label>
+        <select id="${p}Group"></select>
+        <div class="sub-row one" hidden>
+          <input id="${p}NewGroup" type="text" placeholder="新文件夹名称" />
+        </div>
+      </div>`;
+  }
+  document.querySelectorAll('[data-picker]').forEach((d) => { d.innerHTML = pickerHtml(d.dataset.picker); });
 
-  function fillSections(secId, groupName) {
-    const sel = $('#fSection');
+  const secRow = (p) => $('#' + p + 'Section').parentElement.querySelector('.sub-row');
+  const grpRow = (p) => $('#' + p + 'Group').parentElement.querySelector('.sub-row');
+
+  function pickerFill(p, secId, groupName) {
+    const sel = $('#' + p + 'Section');
     sel.innerHTML = data.sections.map((s) => `<option value="${s.id}">${esc(s.title)}</option>`).join('') +
       '<option value="__new__">＋ 新建模块…</option>';
     sel.value = secId && data.sections.some((s) => s.id === secId) ? secId : (data.sections[0]?.id || '__new__');
-    onSectionChange(groupName);
+    $('#' + p + 'NewSection').value = ''; $('#' + p + 'NewIcon').value = ''; $('#' + p + 'NewGroup').value = '';
+    pickerSection(p, groupName);
   }
-  function onSectionChange(groupName) {
-    const secId = $('#fSection').value;
-    $('#newSectionRow').hidden = secId !== '__new__';
+  function pickerSection(p, groupName) {
+    const secId = $('#' + p + 'Section').value;
+    secRow(p).hidden = secId !== '__new__';
     const s = data.sections.find((x) => x.id === secId);
-    const gsel = $('#fGroup');
+    const gsel = $('#' + p + 'Group');
     gsel.innerHTML = (s ? s.groups.map((g) => `<option value="${esc(g.name)}">${esc(g.name)}</option>`).join('') : '') +
       '<option value="__new__">＋ 新建文件夹…</option>';
     gsel.value = groupName && s?.groups.some((g) => g.name === groupName) ? groupName : (s?.groups[0]?.name ?? '__new__');
-    onGroupChange();
+    pickerGroup(p);
   }
-  function onGroupChange() { $('#newGroupRow').hidden = $('#fGroup').value !== '__new__'; }
+  function pickerGroup(p) { grpRow(p).hidden = $('#' + p + 'Group').value !== '__new__'; }
+  function resolveTarget(p) {
+    const secVal = $('#' + p + 'Section').value;
+    let section;
+    if (secVal === '__new__') {
+      const t = $('#' + p + 'NewSection').value.trim();
+      if (!t) { toast('请输入新模块名称'); $('#' + p + 'NewSection').focus(); return null; }
+      section = getSection(t, $('#' + p + 'NewIcon').value.trim());
+    } else section = data.sections.find((s) => s.id === secVal);
+    if (!section) { toast('请选择模块'); return null; }
+    const gv = $('#' + p + 'Group').value;
+    let gname;
+    if (gv === '__new__') {
+      gname = $('#' + p + 'NewGroup').value.trim();
+      if (!gname) { toast('请输入新文件夹名称'); $('#' + p + 'NewGroup').focus(); return null; }
+    } else gname = gv;
+    return { section, group: getGroup(section, gname) };
+  }
+  ['f', 'b', 'm'].forEach((p) => {
+    $('#' + p + 'Section').addEventListener('change', () => pickerSection(p, null));
+    $('#' + p + 'Group').addEventListener('change', () => pickerGroup(p));
+  });
 
+  document.querySelectorAll('dialog').forEach((d) => {
+    d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
+    d.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => d.close()));
+  });
+
+  /* ---------------- 在线识别标题 ---------------- */
+  const BAD_TITLE = /^(just a moment|attention required|access denied|forbidden|robot check|verify you are human|请稍候|403|404)/i;
+  async function timedFetch(u, ms = 10000) {
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), ms);
+    try {
+      const r = await fetch(u, { signal: c.signal });
+      if (!r.ok) throw new Error('http ' + r.status);
+      return await r.text();
+    } finally { clearTimeout(t); }
+  }
+  function titleFromHtml(html) {
+    const d = new DOMParser().parseFromString(html || '', 'text/html');
+    const t = d.querySelector('title')?.textContent;
+    const og = d.querySelector('meta[property="og:title"]')?.getAttribute('content');
+    return (t || og || '').replace(/\s+/g, ' ').trim();
+  }
+  const firstTruthy = (promises) => new Promise((resolve) => {
+    let left = promises.length;
+    const fail = () => { if (--left === 0) resolve(''); };
+    promises.forEach((p) => p.then((v) => {
+      v = (v || '').trim();
+      if (v && !BAD_TITLE.test(v)) resolve(v); else fail();
+    }).catch(fail));
+  });
+  // 多个第三方服务同时请求，取最先返回有效标题的结果
+  function fetchTitle(url) {
+    const enc = encodeURIComponent(url);
+    const jobs = [
+      async () => titleFromHtml(await timedFetch('https://api.allorigins.win/raw?url=' + enc)),
+      async () => titleFromHtml(JSON.parse(await timedFetch('https://api.allorigins.win/get?url=' + enc)).contents),
+      async () => titleFromHtml(await timedFetch('https://corsproxy.io/?url=' + enc)),
+      async () => titleFromHtml(await timedFetch('https://api.codetabs.com/v1/proxy?quest=' + enc)),
+      async () => { const t = await timedFetch('https://r.jina.ai/' + url); const m = t.match(/^Title:\s*(.+)$/m); return m ? m[1] : ''; },
+      async () => JSON.parse(await timedFetch('https://api.microlink.io/?url=' + enc))?.data?.title || '',
+    ];
+    return firstTruthy(jobs.map((f) => f()));
+  }
+  async function pool(list, n, fn) {
+    let i = 0;
+    await Promise.all(Array.from({ length: Math.min(n, list.length) }, async () => {
+      while (i < list.length) { const it = list[i++]; try { await fn(it); } catch {} }
+    }));
+  }
+
+  /* ---------------- 添加 / 编辑 ---------------- */
+  const dlg = $('#addDialog');
+  let editingId = null, detectSeq = 0;
   function setHint(text, cls = '') { const h = $('#detectHint'); h.textContent = text; h.className = 'hint ' + cls; }
 
   function openDialog(id) {
@@ -836,61 +1155,33 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
     $('#fUrl').value = found ? found.it.url : '';
     $('#fTitle').value = found ? found.it.name : '';
     $('#fDesc').value = found ? found.it.desc || '' : '';
-    $('#fNewSection').value = ''; $('#fNewIcon').value = ''; $('#fNewGroup').value = '';
     $('#detectBtn').disabled = false;
     setHint('');
-    if (found) fillSections(found.s.id, found.g.name);
-    else {
-      // 默认选中当前滚动到的模块
-      const active = document.querySelector('.sidebar-link.active')?.dataset.sectionId;
-      fillSections(active, null);
-    }
+    if (found) pickerFill('f', found.s.id, found.g.name);
+    else pickerFill('f', document.querySelector('.sidebar-link.active')?.dataset.sectionId, null);
     dlg.showModal();
     if (!found) $('#fUrl').focus();
   }
 
-  async function timedFetch(u, ms = 8000) {
-    const c = new AbortController();
-    const t = setTimeout(() => c.abort(), ms);
-    try {
-      const r = await fetch(u, { signal: c.signal });
-      if (!r.ok) throw new Error('http ' + r.status);
-      return await r.text();
-    } finally { clearTimeout(t); }
-  }
-  function titleFromHtml(html) {
-    const d = new DOMParser().parseFromString(html, 'text/html');
-    const t = d.querySelector('title')?.textContent;
-    const og = d.querySelector('meta[property="og:title"]')?.getAttribute('content');
-    return (t || og || '').replace(/\s+/g, ' ').trim();
-  }
-  async function fetchTitle(url) {
-    const tries = [
-      async () => titleFromHtml(await timedFetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url))),
-      async () => { const t = await timedFetch('https://r.jina.ai/' + url); const m = t.match(/^Title:\s*(.+)$/m); return m ? m[1].trim() : ''; },
-    ];
-    for (const f of tries) { try { const t = await f(); if (t) return t; } catch {} }
-    return '';
-  }
   async function detect() {
     const url = normalizeUrl($('#fUrl').value);
     if (!url) { setHint('请先粘贴有效链接', 'warn'); return; }
     const seq = ++detectSeq;
     $('#detectBtn').disabled = true;
-    setHint('识别中…');
+    setHint('识别中…（同时请求多个服务，最多约 10 秒）');
     const title = await fetchTitle(url);
     if (seq !== detectSeq) return;
     $('#detectBtn').disabled = false;
     if (title) { $('#fTitle').value = title; setHint('已识别标题', 'ok'); }
-    else setHint('未能自动识别（站点限制或网络问题），请手动输入标题', 'warn');
+    else {
+      if (!$('#fTitle').value.trim()) $('#fTitle').value = hostname(url);
+      setHint('所有识别服务都没返回结果（网络受限或站点拦截），已先填入域名，可手动修改', 'warn');
+    }
   }
 
   $('#addBtn').addEventListener('click', () => openDialog());
   $('#cancelBtn').addEventListener('click', () => dlg.close());
-  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
   $('#detectBtn').addEventListener('click', detect);
-  $('#fSection').addEventListener('change', () => onSectionChange(null));
-  $('#fGroup').addEventListener('change', onGroupChange);
   $('#fUrl').addEventListener('paste', () => setTimeout(() => { if (!$('#fTitle').value.trim()) detect(); }, 0));
   $('#fUrl').addEventListener('change', () => { if (!$('#fTitle').value.trim() && $('#fUrl').value.trim()) detect(); });
 
@@ -900,53 +1191,38 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
     if (!url) { toast('链接格式不正确'); $('#fUrl').focus(); return; }
     const name = $('#fTitle').value.trim() || hostname(url);
     const desc = $('#fDesc').value.trim();
+    const tgt = resolveTarget('f');
+    if (!tgt) return;
 
-    const secVal = $('#fSection').value;
-    let secTitle, secIcon = null;
-    if (secVal === '__new__') {
-      secTitle = $('#fNewSection').value.trim();
-      if (!secTitle) { toast('请输入新模块名称'); $('#fNewSection').focus(); return; }
-      secIcon = $('#fNewIcon').value.trim();
-    } else secTitle = data.sections.find((s) => s.id === secVal)?.title;
-
-    const grpVal = $('#fGroup').value;
-    let grpName;
-    if (grpVal === '__new__') {
-      grpName = $('#fNewGroup').value.trim();
-      if (!grpName) { toast('请输入新文件夹名称'); $('#fNewGroup').focus(); return; }
-    } else grpName = grpVal;
-
-    if (editingId) {
-      const f = findItem(editingId);
-      if (f) f.g.items = f.g.items.filter((i) => i.id !== editingId);
-    }
-    const section = secVal === '__new__' ? getSection(secTitle, secIcon) : data.sections.find((s) => s.id === secVal);
-    const group = getGroup(section, grpName);
-    if (!editingId && group.items.some((i) => i.url === url)) { toast('该文件夹里已有这个链接'); return; }
-    group.items.push({ id: editingId || uid(), name, url, desc });
+    const prev = editingId ? findItem(editingId) : null;
+    const color = prev?.it.color;
+    if (prev) prev.g.items = prev.g.items.filter((i) => i.id !== editingId);
+    if (!editingId && tgt.group.items.some((i) => i.url === url)) { toast('该文件夹里已有这个链接'); return; }
+    const entry = { id: editingId || uid(), name, url, desc };
+    if (color) entry.color = color;
+    tgt.group.items.push(entry);
 
     save(); render(); dlg.close();
     toast(editingId ? '已保存修改' : '已添加');
   });
 
-  /* ---------------- 编辑 / 删除 / 空状态按钮 ---------------- */
-  $('#content').addEventListener('click', (e) => {
-    const empty = e.target.closest('[data-empty]');
-    if (empty) { empty.dataset.empty === 'add' ? openDialog() : $('#fileInput').click(); return; }
-    const btn = e.target.closest('[data-act]');
-    if (!btn) return;
-    const id = btn.dataset.id;
-    if (btn.dataset.act === 'edit') openDialog(id);
-    else if (btn.dataset.act === 'del') {
-      const f = findItem(id);
-      if (f && confirm(`删除「${f.it.name}」？`)) {
-        f.g.items = f.g.items.filter((i) => i.id !== id);
-        save(); render(); toast('已删除');
-      }
-    }
+  /* ---------------- 导入菜单 ---------------- */
+  const importMenu = $('#importMenu');
+  $('#importBtn').addEventListener('click', (e) => { e.stopPropagation(); importMenu.hidden = !importMenu.hidden; });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-wrap')) importMenu.hidden = true;
+    if (!e.target.closest('.color-wrap')) $('#colorPop').hidden = true;
+  });
+  importMenu.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-imp]');
+    if (!b) return;
+    importMenu.hidden = true;
+    if (b.dataset.imp === 'html') $('#fileInput').click();
+    else if (b.dataset.imp === 'md') openMd();
+    else openBulk();
   });
 
-  /* ---------------- 导入书签（Netscape HTML） ---------------- */
+  /* ---------------- 导入：书签 HTML ---------------- */
   const ROOTS = new Set(['书签栏', '书签工具栏', '书签菜单', '其他书签', '移动设备书签', '收藏夹栏', '收藏夹',
     'bookmarks bar', 'bookmarks toolbar', 'bookmarks menu', 'other bookmarks', 'mobile bookmarks', 'favorites bar', 'favorites', 'bookmarks']);
 
@@ -973,17 +1249,15 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
     for (const a of doc.querySelectorAll('a[href]')) {
       const href = (a.getAttribute('href') || '').trim();
       if (!/^https?:\/\//i.test(href)) { skipped++; continue; }
-      let p = folderPath(a);
+      const p = folderPath(a);
       while (p.length && ROOTS.has(p[0].toLowerCase())) p.shift();
       let secTitle, grpName;
       if (!p.length) { secTitle = '未分类'; grpName = '默认'; }
       else if (p.length === 1) { secTitle = p[0]; grpName = '默认'; }
       else { secTitle = p[0]; grpName = p.slice(1).join(' / '); }
 
-      const section = getSection(secTitle);
-      const group = getGroup(section, grpName);
+      const group = getGroup(getSection(secTitle), grpName);
       if (group.items.some((i) => i.url === href)) { skipped++; continue; }
-
       const dt = a.closest('dt');
       const dd = dt && dt.nextElementSibling && dt.nextElementSibling.tagName === 'DD' ? dt.nextElementSibling.textContent.trim() : '';
       group.items.push({ id: uid(), name: a.textContent.trim() || hostname(href), url: href, desc: dd });
@@ -993,17 +1267,307 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
     return { added, skipped };
   }
 
-  $('#importBtn').addEventListener('click', () => $('#fileInput').click());
   $('#fileInput').addEventListener('change', async (e) => {
     const f = e.target.files[0];
     if (!f) return;
     try {
-      const text = await f.text();
-      const { added, skipped } = importBookmarks(text);
+      const { added, skipped } = importBookmarks(await f.text());
       save(); render();
       toast(added ? `已导入 ${added} 个链接${skipped ? `，跳过 ${skipped} 个（重复或非网页链接）` : ''}` : '没有可导入的新链接');
     } catch { toast('读取文件失败'); }
     e.target.value = '';
+  });
+
+  /* ---------------- 导入：Markdown ---------------- */
+  const mdDlg = $('#mdDialog');
+  const mdPicker = document.createElement('input');
+  mdPicker.type = 'file'; mdPicker.accept = '.md,.markdown,.txt,text/markdown,text/plain'; mdPicker.multiple = true;
+  let mdFiles = [];
+  const MD_HINT = '可一次选多个文件，每个文件对应一个模块';
+
+  function openMd() {
+    mdFiles = [];
+    $('#mdText').value = '';
+    $('#mdDefault').value = '';
+    $('#mdFiles').textContent = MD_HINT;
+    mdDlg.showModal();
+    $('#mdText').focus();
+  }
+  $('#mdPick').addEventListener('click', () => mdPicker.click());
+  mdPicker.addEventListener('change', async () => {
+    const files = [...mdPicker.files];
+    mdFiles = await Promise.all(files.map(async (f) => ({ name: f.name.replace(/\.[^.]+$/, ''), text: await f.text() })));
+    $('#mdFiles').textContent = mdFiles.length ? `已选择 ${mdFiles.length} 个文件：${mdFiles.map((f) => f.name).join('、')}` : MD_HINT;
+    mdPicker.value = '';
+  });
+
+  function parseMarkdown(text, fallback) {
+    text = text.replace(/^﻿/, '');
+    let title = '', icon = '', body = text;
+    const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (fm) {
+      const pick = (k) => {
+        const m = fm[1].match(new RegExp('^\\s*' + k + ':\\s*(.+)$', 'm'));
+        return m ? m[1].trim().replace(/^["']|["']$/g, '') : '';
+      };
+      title = pick('title'); icon = pick('icon');
+      body = text.slice(fm[0].length);
+    }
+    if (!title) { const h1 = body.match(/^#\s+(.+)$/m); if (h1) title = h1[1].trim(); }
+    const groups = new Map();
+    let cur = '其他';
+    for (const line of body.split(/\r?\n/)) {
+      const h = line.match(/^##\s+(.+)/);
+      if (h) { cur = h[1].trim(); continue; }
+      const m = line.match(/^\s*[-*]\s*\[([^\]]+)\]\(([^)]+)\)\s*(?:[-–—]\s*)?(.*)$/);
+      if (!m) continue;
+      if (!groups.has(cur)) groups.set(cur, []);
+      groups.get(cur).push({ name: m[1].trim(), url: m[2].trim(), desc: (m[3] || '').trim() });
+    }
+    return { title: title || fallback, icon, groups };
+  }
+
+  $('#mdForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fallback = $('#mdDefault').value.trim() || '未分类';
+    const sources = mdFiles.map((f) => ({ text: f.text, fallback: f.name }));
+    const pasted = $('#mdText').value;
+    if (pasted.trim()) sources.push({ text: pasted, fallback });
+    if (!sources.length) { toast('请粘贴内容或选择文件'); return; }
+
+    let added = 0, skipped = 0;
+    for (const src of sources) {
+      const doc = parseMarkdown(src.text, src.fallback);
+      for (const [gname, links] of doc.groups) {
+        for (const l of links) {
+          if (!/^https?:\/\//i.test(l.url)) { skipped++; continue; }
+          const group = getGroup(getSection(doc.title, doc.icon), gname);
+          if (group.items.some((i) => i.url === l.url)) { skipped++; continue; }
+          group.items.push({ id: uid(), name: l.name, url: l.url, desc: l.desc });
+          added++;
+        }
+      }
+    }
+    if (!added) { toast('没有识别到可导入的链接，请对照下方格式说明检查'); return; }
+    save(); render(); mdDlg.close();
+    toast(`已导入 ${added} 个链接${skipped ? `，跳过 ${skipped} 个（重复或非 http 链接）` : ''}`);
+  });
+
+  /* ---------------- 导入：批量网址 ---------------- */
+  const bulkDlg = $('#bulkDialog');
+  function openBulk() {
+    $('#bText').value = '';
+    $('#bDetect').checked = false;
+    $('#bSave').disabled = false;
+    $('#bHint').textContent = '可以只写链接，也可以「标题 链接」或 Markdown 写法';
+    $('#bHint').className = 'hint';
+    pickerFill('b', document.querySelector('.sidebar-link.active')?.dataset.sectionId, null);
+    bulkDlg.showModal();
+    $('#bText').focus();
+  }
+
+  function parseBulk(text) {
+    const out = [], seen = new Set();
+    for (const raw of text.split(/\r?\n/)) {
+      const line = raw.trim();
+      if (!line) continue;
+      let url = '', title = '';
+      const md = line.match(/\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/i);
+      if (md) { url = md[2]; title = md[1].trim(); }
+      else {
+        const m = line.match(/https?:\/\/[^\s<>"'，。]+/i);
+        if (m) {
+          url = m[0].replace(/[)\]},.;，。]+$/, '');
+          title = line.replace(m[0], '').replace(/^[\s\-–—|,，:：>*•\[\]()（）]+|[\s\-–—|,，:：<*\[\]()（）]+$/g, '');
+        } else {
+          const tok = line.split(/\s+/).find((t) => /^[\w-]+(\.[\w-]+)+(:\d+)?([\/?#]\S*)?$/.test(t));
+          if (tok) { url = normalizeUrl(tok); title = line.replace(tok, '').trim(); }
+        }
+      }
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      out.push({ url, title });
+    }
+    return out;
+  }
+  $('#bText').addEventListener('input', () => {
+    const n = parseBulk($('#bText').value).length;
+    $('#bHint').textContent = n ? `识别到 ${n} 个链接` : '可以只写链接，也可以「标题 链接」或 Markdown 写法';
+    $('#bHint').className = 'hint' + (n ? ' ok' : '');
+  });
+
+  $('#bulkForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const items = parseBulk($('#bText').value);
+    if (!items.length) { toast('没有识别到链接'); return; }
+    const tgt = resolveTarget('b');
+    if (!tgt) return;
+
+    const btn = $('#bSave');
+    if ($('#bDetect').checked) {
+      const todo = items.filter((i) => !i.title);
+      let done = 0;
+      btn.disabled = true;
+      $('#bHint').textContent = `识别标题 0/${todo.length}…`;
+      await pool(todo, 4, async (it) => {
+        it.title = await fetchTitle(it.url);
+        $('#bHint').textContent = `识别标题 ${++done}/${todo.length}…`;
+      });
+      btn.disabled = false;
+    }
+
+    let added = 0, dup = 0;
+    for (const it of items) {
+      if (tgt.group.items.some((i) => i.url === it.url)) { dup++; continue; }
+      tgt.group.items.push({ id: uid(), name: it.title || hostname(it.url), url: it.url, desc: '' });
+      added++;
+    }
+    save(); render(); bulkDlg.close();
+    toast(`已导入 ${added} 个链接到「${tgt.group.name}」${dup ? `，跳过 ${dup} 个重复` : ''}`);
+  });
+
+  /* ---------------- 批量管理 ---------------- */
+  function updateManageUI() {
+    document.body.classList.toggle('manage', manage);
+    $('#manageBar').hidden = !manage;
+    $('#manageBtn').classList.toggle('on', manage);
+    $('#manageBtn').setAttribute('aria-pressed', String(manage));
+    const n = selected.size;
+    $('#selCount').textContent = '已选 ' + n;
+    ['#mbMove', '#mbColor', '#mbDel'].forEach((s) => { $(s).disabled = !n; });
+    const total = allIds().length;
+    $('#mbAll span').textContent = n && n === total ? '取消全选' : '全选';
+    if (!n) $('#colorPop').hidden = true;
+  }
+  function refreshSelectionDom() {
+    document.querySelectorAll('.link-item').forEach((el) => {
+      const cb = el.querySelector('.sel-check');
+      const on = selected.has(cb.dataset.id);
+      el.classList.toggle('selected', on);
+      cb.checked = on;
+    });
+    document.querySelectorAll('.group-check').forEach((cb) => {
+      const g = data.sections.find((x) => x.id === cb.dataset.sec)?.groups[+cb.dataset.g];
+      cb.checked = !!(g && g.items.length && g.items.every((i) => selected.has(i.id)));
+    });
+    updateManageUI();
+  }
+  function setSelected(id, on) { on ? selected.add(id) : selected.delete(id); }
+
+  $('#manageBtn').addEventListener('click', () => {
+    manage = !manage;
+    if (!manage) selected.clear();
+    refreshSelectionDom();
+  });
+  $('#mbDone').addEventListener('click', () => { manage = false; selected.clear(); refreshSelectionDom(); });
+  $('#mbAll').addEventListener('click', () => {
+    const ids = allIds();
+    if (selected.size === ids.length) selected.clear(); else ids.forEach((id) => selected.add(id));
+    refreshSelectionDom();
+  });
+
+  PALETTE.forEach((p) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'swatch'; b.title = p.n; b.setAttribute('aria-label', p.n);
+    b.style.background = `var(--c-${p.k})`; b.dataset.color = p.k;
+    $('#colorPop').appendChild(b);
+  });
+  const clearBtn = document.createElement('button');
+  clearBtn.type = 'button'; clearBtn.className = 'swatch'; clearBtn.title = '恢复默认'; clearBtn.setAttribute('aria-label', '恢复默认');
+  clearBtn.dataset.color = ''; clearBtn.innerHTML = '<i class="fa-solid fa-ban"></i>';
+  $('#colorPop').appendChild(clearBtn);
+
+  $('#mbColor').addEventListener('click', (e) => { e.stopPropagation(); $('#colorPop').hidden = !$('#colorPop').hidden; });
+  $('#colorPop').addEventListener('click', (e) => {
+    const b = e.target.closest('.swatch');
+    if (!b || !selected.size) return;
+    const key = b.dataset.color;
+    let n = 0;
+    selected.forEach((id) => {
+      const f = findItem(id);
+      if (!f) return;
+      if (key) f.it.color = key; else delete f.it.color;
+      n++;
+    });
+    $('#colorPop').hidden = true;
+    save(); render();
+    toast(key ? `已为 ${n} 个网址设置背景色` : `已恢复 ${n} 个网址的默认背景`);
+  });
+
+  $('#mbDel').addEventListener('click', () => {
+    const n = selected.size;
+    if (!n || !confirm(`删除选中的 ${n} 个网址？此操作不能撤销。`)) return;
+    data.sections.forEach((s) => s.groups.forEach((g) => { g.items = g.items.filter((i) => !selected.has(i.id)); }));
+    selected.clear();
+    save(); render();
+    toast(`已删除 ${n} 个网址`);
+  });
+
+  const moveDlg = $('#moveDialog');
+  $('#mbMove').addEventListener('click', () => {
+    if (!selected.size) return;
+    $('#moveTitle').textContent = `移动 ${selected.size} 个网址到`;
+    pickerFill('m', null, null);
+    moveDlg.showModal();
+  });
+  $('#moveForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const tgt = resolveTarget('m');
+    if (!tgt) return;
+    const moving = [];
+    data.sections.forEach((s) => s.groups.forEach((g) => {
+      g.items = g.items.filter((i) => { if (selected.has(i.id)) { moving.push(i); return false; } return true; });
+    }));
+    let moved = 0, dup = 0;
+    for (const it of moving) {
+      if (tgt.group.items.some((x) => x.url === it.url)) { dup++; continue; }
+      tgt.group.items.push(it); moved++;
+    }
+    selected.clear();
+    save(); render(); moveDlg.close();
+    toast(`已移动 ${moved} 个网址到「${tgt.group.name}」${dup ? `，${dup} 个因目标已有相同链接而合并` : ''}`);
+  });
+
+  /* ---------------- 内容区事件 ---------------- */
+  $('#content').addEventListener('click', (e) => {
+    const empty = e.target.closest('[data-empty]');
+    if (empty) {
+      if (empty.dataset.empty === 'add') openDialog();
+      else { $('#importMenu').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      return;
+    }
+    const btn = e.target.closest('[data-act]');
+    if (btn) {
+      const id = btn.dataset.id;
+      if (btn.dataset.act === 'edit') openDialog(id);
+      else {
+        const f = findItem(id);
+        if (f && confirm(`删除「${f.it.name}」？`)) {
+          f.g.items = f.g.items.filter((i) => i.id !== id);
+          selected.delete(id);
+          save(); render(); toast('已删除');
+        }
+      }
+      return;
+    }
+    if (manage) {
+      const card = e.target.closest('.link-card');
+      if (card) {
+        e.preventDefault();
+        const cb = card.closest('.link-item').querySelector('.sel-check');
+        setSelected(cb.dataset.id, !selected.has(cb.dataset.id));
+        refreshSelectionDom();
+      }
+    }
+  });
+  $('#content').addEventListener('change', (e) => {
+    const cb = e.target;
+    if (cb.classList.contains('sel-check')) { setSelected(cb.dataset.id, cb.checked); refreshSelectionDom(); }
+    else if (cb.classList.contains('group-check')) {
+      const g = data.sections.find((x) => x.id === cb.dataset.sec)?.groups[+cb.dataset.g];
+      if (g) g.items.forEach((i) => setSelected(i.id, cb.checked));
+      refreshSelectionDom();
+    }
   });
 
   /* ---------------- 导出书签 ---------------- */
@@ -1041,6 +1605,7 @@ dialog::backdrop { background: rgba(10, 20, 40, 0.38); backdrop-filter: blur(3px
 
   render();
 })();
+
 </script>
 </body>
 </html>
